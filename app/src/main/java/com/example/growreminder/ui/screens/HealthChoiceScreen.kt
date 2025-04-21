@@ -75,13 +75,11 @@ fun HealthCard(text: String, navController: NavController) {
     Box(
         modifier = Modifier
             .size(170.dp)
-            .shadow(8.dp, shape = RoundedCornerShape(16.dp)) // 🌟 Đổ bóng ở đây
+            .shadow(8.dp, shape = RoundedCornerShape(16.dp))
             .background(Color.White, shape = RoundedCornerShape(16.dp))
             .clickable {
-                when (text) {
-                    "Tập thể dục" -> navController.navigate("schedule")
-                    else -> navController.navigate("schedule")
-                }
+                // Truyền tên task khi điều hướng đến màn hình schedule
+                navController.navigate("schedule/${text}")
             }
             .padding(16.dp),
         contentAlignment = Alignment.Center

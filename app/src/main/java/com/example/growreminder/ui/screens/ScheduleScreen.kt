@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.database.ktx.database
@@ -28,7 +29,10 @@ import java.util.*
 import com.example.growreminder.ui.alarm.AlarmScheduler
 
 @Composable
-fun ScheduleScreen(navController: NavController) {
+fun ScheduleScreen(
+    navController: NavController,
+    taskName: String = "Đọc sách" // Nhận tham số taskName từ màn hình trước
+) {
     val context = LocalContext.current
     val currentDate = remember { LocalDate.now() }
     val today = remember { LocalDate.now() }
@@ -37,8 +41,11 @@ fun ScheduleScreen(navController: NavController) {
     val selectedHour = remember { mutableIntStateOf(LocalTime.now().hour) }
     val selectedMinute = remember { mutableIntStateOf(LocalTime.now().minute) }
 
+    // Hiển thị taskName nhận được từ màn hình lựa chọn
+    val task = remember { mutableStateOf(taskName) }
+
     // Thêm state cho phần mô tả có thể chỉnh sửa
-    val bookDescription = remember { mutableStateOf("Sách kỹ năng bán hàng") }
+    val bookDescription = remember { mutableStateOf("") }
 
     val lazyListState = rememberLazyListState()
     val days = remember { List(365 * 5) { offset -> currentDate.plusDays(offset.toLong()) } }
@@ -65,7 +72,7 @@ fun ScheduleScreen(navController: NavController) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back")
             }
             Spacer(modifier = Modifier.width(16.dp))
-            Text("Lịch đọc sách", style = MaterialTheme.typography.titleLarge)
+            Text("Thêm Lịch", style = MaterialTheme.typography.titleLarge)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -119,7 +126,7 @@ fun ScheduleScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Text("Chọn giờ đọc sách", style = MaterialTheme.typography.titleMedium)
+        Text("Chọn giờ ${task.value}", style = MaterialTheme.typography.titleMedium)
 
         SpinnerTimePicker(
             selectedDate = selectedDate.value,
@@ -132,22 +139,29 @@ fun ScheduleScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Task info
+        // Task info - Hiển thị loại task được chọn
         Row {
             Text("Việc cần làm:", fontWeight = FontWeight.Bold)
             Spacer(Modifier.width(8.dp))
-            Text("Đọc sách")
+            Text(task.value)
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Thêm trường nhập liệu cho mô tả
+        // Thêm trường nhập liệu cho mô tả với hỗ trợ Unicode đầy đủ
         OutlinedTextField(
             value = bookDescription.value,
-            onValueChange = { bookDescription.value = it },
+            onValueChange = { newText ->
+                // Lưu trữ giá trị mới không làm thay đổi encoding
+                bookDescription.value = newText
+            },
             label = { Text("Mô tả nội dung") },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Nhập việc cần làm,...") }
+            placeholder = { Text("Nhập chi tiết về ${task.value}...") },
+            // Cấu hình để hỗ trợ văn bản nhiều dòng và Unicode
+            maxLines = 3,
+            singleLine = false,
+            textStyle = MaterialTheme.typography.bodyMedium
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -159,7 +173,7 @@ fun ScheduleScreen(navController: NavController) {
             Text("$dateFormatted - $timeFormatted")
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(130.dp))
 
         // Thêm lịch
         Button(
@@ -169,9 +183,10 @@ fun ScheduleScreen(navController: NavController) {
                 val dbRef = Firebase.database.reference
                 val scheduleId = dbRef.child("schedules").push().key ?: UUID.randomUUID().toString()
 
+                // Sử dụng tên task đã chọn từ màn hình trước
                 val newSchedule = mapOf(
-                    "task" to "Đọc sách",
-                    "description" to bookDescription.value,
+                    "task" to task.value,
+                    "description" to bookDescription.value.trim(), // Loại bỏ khoảng trắng thừa
                     "date" to dateFormatted,
                     "time" to timeFormatted,
                     "timestamp" to System.currentTimeMillis()
@@ -179,11 +194,11 @@ fun ScheduleScreen(navController: NavController) {
 
                 dbRef.child("schedules").child(scheduleId).setValue(newSchedule)
                     .addOnSuccessListener {
-                        // Đặt báo thức
+                        // Đặt báo thức với tên task đúng
                         alarmScheduler.scheduleAlarm(
                             id = scheduleId,
-                            task = "Đọc sách",
-                            description = bookDescription.value,
+                            task = task.value,
+                            description = bookDescription.value.trim(), // Đảm bảo sử dụng giá trị chính xác
                             date = dateFormatted,
                             time = timeFormatted
                         )

@@ -44,7 +44,7 @@ fun DailyMotivationScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(90.dp))
         MotivationCard("Lịch dự kiến") { navController.navigate("schedule") }
         Spacer(modifier = Modifier.height(90.dp))
-        MotivationCard("Lịch cần làm") { navController.navigate("todoList") }
+        MotivationCard("Lịch cần làm") { navController.navigate("schedule_list") }
     }
 }
 @Composable

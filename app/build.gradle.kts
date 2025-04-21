@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.material.icons.extended)
 
+
     // ✅ Material 3 stable
     implementation(libs.material3)
 
