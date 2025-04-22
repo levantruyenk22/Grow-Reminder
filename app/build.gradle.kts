@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.growreminder"
-        minSdk = 35
+        minSdk = 30
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -58,6 +58,9 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
 
+    // Thêm dependency này cho lifecycle-runtime-compose
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
     // ✅ Material 3 stable
     implementation(libs.material3)
 
@@ -72,6 +75,9 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+    implementation(libs.lifecycle.viewmodel.compose)
+    // Chuyển sang sử dụng StateFlow thay vì LiveData
+    // implementation(libs.androidx.compose.runtime.livedata)
 
     // ✅ Network (Retrofit, OkHttp, Gson)
     implementation(libs.retrofit)

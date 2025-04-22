@@ -11,16 +11,27 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import com.example.growreminder.ui.theme.GrowReminderTheme
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.compose.material3.Surface
+
+
+import com.example.growreminder.ui.theme.GrowReminderTheme
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+        FirebaseAuth.getInstance().signOut()
         enableEdgeToEdge()
 
         try {
@@ -68,3 +79,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
+

@@ -15,15 +15,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.growreminder.sign_in.AuthViewModel
 
 @Composable
-fun PersonalDevelopmentScreen(navController: NavController) {
+fun PersonalDevelopmentScreen(navController: NavController, authViewModel: AuthViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.Start
     ) {
+
+
         // Nút trở về và tiêu đề
         Row(
             verticalAlignment = Alignment.CenterVertically,
