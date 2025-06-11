@@ -98,4 +98,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("androidx.credentials:credentials:1.2.0-alpha03")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.0-alpha03")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+// Identity Credential API (Google Sign-In mới)
+    implementation("androidx.credentials:credentials:1.2.1")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
+    implementation("androidx.compose.material3:material3:1.2.1")
+
 }

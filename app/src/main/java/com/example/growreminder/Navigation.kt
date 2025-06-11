@@ -19,6 +19,7 @@ import com.example.growreminder.ui.screens.ScheduleListScreen
 import com.example.growreminder.ui.screens.ScheduleScreen
 import com.example.growreminder.ui.screens.SignupPage
 import com.example.growreminder.ui.screens.StudyChoiceScreen
+import com.example.growreminder.ui.screens.UpdateProfileScreen
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -48,7 +49,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable("profile") {
             ProfileScreen(navController, authViewModel)
         }
-
+        composable("update_info") {
+            UpdateProfileScreen(navController)
+        }
         composable(
             route = "schedule/{taskName}",
             arguments = listOf(navArgument("taskName") { type = NavType.StringType })

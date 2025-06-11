@@ -1,9 +1,10 @@
 package com.example.growreminder.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,149 +12,145 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.growreminder.R
 import com.example.growreminder.sign_in.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import androidx.compose.foundation.BorderStroke
 
-@Composable
-fun HeaderProfile(navHostController: NavHostController, detail: String, onLogout: () -> Unit) {
-    Column(
-        modifier = Modifier.background(Color.White)
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Button(
-                onClick = { navHostController.popBackStack() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color(0xFF42AFFF)
-                ),
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(top = 40.dp, start = 5.dp, end = 15.dp, bottom = 15.dp)
-            ) {
-                Text(
-                    text = "<",
-                    fontSize = 40.sp
-                )
-            }
-
-            Text(
-                text = detail,
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
-                color = Color(0xFF42AFFF),
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 55.dp)
-            )
-
-            TextButton(
-                onClick = onLogout,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 50.dp, end = 15.dp)
-            ) {
-                Text("Logout", color = Color.Red, fontSize = 25.sp, fontWeight = Bold)
-            }
-        }
-    }
-}
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     val user = FirebaseAuth.getInstance().currentUser
-    var userName by remember { mutableStateOf(user?.displayName ?: "") }
-    var userEmail by remember { mutableStateOf(user?.email ?: "No email available") }
+    var profileInfo by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    LaunchedEffect(Unit) {
+        user?.let {
+            Firebase.firestore.collection("users").document(it.uid).get()
+                .addOnSuccessListener { doc ->
+                    profileInfo = doc.data?.mapValues { it.value.toString() } ?: emptyMap()
+                }
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text("Hồ sơ cá nhân", fontWeight = FontWeight.Bold)
+                }
+            )
+        }
+    ) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .padding(padding)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HeaderProfile(
-                navHostController = navController,
-                detail = "Profile",
-                onLogout = {
-                    authViewModel.logout()
-                    navController.navigate("login") {
-                        popUpTo(0)
-                    }
-                }
-            )
-        }
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            // Avatar
+            Image(
+                painter = painterResource(id = R.drawable.avatar),
+                contentDescription = "Avatar",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 120.dp)
-                    .background(Color.White)
+                    .size(130.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Họ tên
+            Text(
+                text = profileInfo["fullName"] ?: "Họ và tên",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            // Username
+            Text(
+                text = "@${profileInfo["username"] ?: "username"}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Ngày sinh
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Box(modifier = Modifier.fillMaxHeight()) {
-                    Image(
-                        painter = painterResource(id = R.drawable.avatar),
-                        contentDescription = "User Avatar",
-                        modifier = Modifier
-                            .size(200.dp)
-                            .clip(CircleShape)
-                    )
-                }
+                Text("🎂 Ngày sinh: ", fontWeight = FontWeight.Medium)
+                Text(profileInfo["birthdate"] ?: "Chưa cập nhật")
             }
-        }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "Name",
-                fontSize = 25.sp,
-                modifier = Modifier.padding(top = 380.dp, start = 30.dp)
-            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedTextField(
-                value = userName,
-                onValueChange = { userName = it },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-            )
+            // Nơi ở
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("📍 Nơi ở: ", fontWeight = FontWeight.Medium)
+                Text(profileInfo["location"] ?: "Chưa cập nhật")
+            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            // ⚠️ Nếu thiếu thông tin: hiện nút cập nhật
+            val missingInfo = profileInfo["birthdate"].isNullOrEmpty() || profileInfo["location"].isNullOrEmpty()
 
-            Text(
-                text = "Email",
-                fontSize = 25.sp,
-                modifier = Modifier.padding(start = 30.dp)
-            )
+                Spacer(modifier = Modifier.height(20.dp))
 
-            OutlinedTextField(
-                value = userEmail,
-                onValueChange = { userEmail = it },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-            )
+                Button(
+                    onClick = { navController.navigate("update_info") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Cập nhật thông tin")
+                }
+
+
+
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // ✅ Nút Go to Home
+            // Nút Get Started
             Button(
+                onClick = { navController.navigate("home") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Bắt đầu sử dụng", fontSize = 16.sp)
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Nút Đăng xuất
+            OutlinedButton(
                 onClick = {
-                    navController.navigate("home")
+                    authViewModel.signOut()
+                    navController.navigate("login") { popUpTo(0) }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
+                    .height(52.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = Color.Red
+                ),
+                border = BorderStroke(1.dp, Color.Red)
             ) {
-                Text(text = "Get Started", fontSize = 18.sp)
+                Text("Đăng xuất", fontSize = 15.sp, fontWeight = FontWeight.Medium)
             }
         }
     }
