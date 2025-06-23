@@ -59,9 +59,21 @@ class AuthViewModel(application: android.app.Application) : AndroidViewModel(app
 
     private fun getFakeEmail(username: String): String = "$username@growreminder.com"
 
+    private fun validatePassword(password: String): String? {
+        if (password.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự"
+        if (password.all { it.isDigit() }) return "Mật khẩu không được chỉ bao gồm số"
+        return null
+    }
+
     fun signup() {
         val state = _uiState.value
         viewModelScope.launch {
+            val passwordError = validatePassword(state.password)
+            if (passwordError != null) {
+                _authState.value = AuthState.Error(passwordError)
+                return@launch
+            }
+
             if (state.password != state.confirmPassword) {
                 _authState.value = AuthState.Error("Mật khẩu xác nhận không trùng khớp")
                 return@launch
@@ -137,17 +149,14 @@ class AuthViewModel(application: android.app.Application) : AndroidViewModel(app
                     .addCredentialOption(googleIdOption)
                     .build()
 
-                // ✅ CHUẨN: Gọi hàm suspend đúng
                 val result = credentialManager.getCredential(context, request)
 
-                // ✅ Đúng cách lấy credential
                 val credential = result.credential
                 if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                     val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
                     auth.signInWithCredential(firebaseCredential).await()
 
-                    // ✅ Tạo username từ email
                     val user = auth.currentUser
                     val uid = user?.uid
                     val email = user?.email ?: ""
@@ -180,6 +189,4 @@ class AuthViewModel(application: android.app.Application) : AndroidViewModel(app
             }
         }
     }
-
-
 }
