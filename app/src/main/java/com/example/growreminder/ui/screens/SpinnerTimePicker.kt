@@ -29,12 +29,16 @@ fun SpinnerTimePicker(
     val hours = (0..23).toList()
     val minutes = (0..59).toList()
 
-    val hourState = rememberLazyListState(initialFirstVisibleItemIndex = selectedHour)
-    val minuteState = rememberLazyListState(initialFirstVisibleItemIndex = selectedMinute)
+    val repeatedHours = List(1000) { hours[it % 24] }
+    val repeatedMinutes = List(1000) { minutes[it % 60] }
+
+    val hourStartIndex = 500
+    val minuteStartIndex = 500
+
+    val hourState = rememberLazyListState(hourStartIndex + selectedHour)
+    val minuteState = rememberLazyListState(minuteStartIndex + selectedMinute)
 
     val coroutineScope = rememberCoroutineScope()
-
-    val isToday = selectedDate == LocalDate.now()
 
     Row(
         modifier = Modifier
@@ -42,81 +46,64 @@ fun SpinnerTimePicker(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        // Hour column
         LazyColumn(
             state = hourState,
             modifier = Modifier.width(80.dp)
         ) {
-            items(hours.size) { index ->
-                val hour = hours[index]
-                val isPastHour = isToday && hour < currentTime.hour
-                val isSelected = selectedHour == hour
+            items(repeatedHours.size) { index ->
+                val hour = repeatedHours[index]
+                val isSelected = hour == selectedHour
+                val isPastHour = false // ✅ Cho phép tất cả giờ
 
                 Text(
                     text = hour.toString().padStart(2, '0'),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
-                        .let {
-                            if (!isPastHour) it.clickable {
-                                onHourChanged(hour)
-                                coroutineScope.launch {
-                                    hourState.animateScrollToItem(index)
-                                }
-                            } else it
+                        .clickable {
+                            onHourChanged(hour)
+                            coroutineScope.launch {
+                                hourState.animateScrollToItem(index)
+                            }
                         },
                     textAlign = TextAlign.Center,
-                    color = if (isPastHour) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                    else MaterialTheme.colorScheme.onSurface,
-                    style = if (isSelected && !isPastHour)
-                        MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    else
-                        MaterialTheme.typography.bodyLarge
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = if (isSelected) MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    else MaterialTheme.typography.bodyLarge
                 )
             }
         }
 
-        // Colon separator
-        Text(
-            ":",
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .align(Alignment.CenterVertically),
+        Text(":", modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .align(Alignment.CenterVertically),
             style = MaterialTheme.typography.headlineMedium
         )
 
-        // Minute column
         LazyColumn(
             state = minuteState,
             modifier = Modifier.width(80.dp)
         ) {
-            items(minutes.size) { index ->
-                val minute = minutes[index]
-                val isPastMinute = isToday && selectedHour == currentTime.hour && minute < currentTime.minute
-                val isPastHour = isToday && selectedHour < currentTime.hour
-                val disabled = isPastHour || isPastMinute
-                val isSelected = selectedMinute == minute
+            items(repeatedMinutes.size) { index ->
+                val minute = repeatedMinutes[index]
+                val isSelected = minute == selectedMinute
+                val disabled = false // ✅ Cho phép tất cả phút
 
                 Text(
                     text = minute.toString().padStart(2, '0'),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
-                        .let {
-                            if (!disabled) it.clickable {
-                                onMinuteChanged(minute)
-                                coroutineScope.launch {
-                                    minuteState.animateScrollToItem(index)
-                                }
-                            } else it
+                        .clickable {
+                            onMinuteChanged(minute)
+                            coroutineScope.launch {
+                                minuteState.animateScrollToItem(index)
+                            }
                         },
                     textAlign = TextAlign.Center,
-                    color = if (disabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                    else MaterialTheme.colorScheme.onSurface,
-                    style = if (isSelected && !disabled)
-                        MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    else
-                        MaterialTheme.typography.bodyLarge
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = if (isSelected) MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    else MaterialTheme.typography.bodyLarge
                 )
             }
         }
