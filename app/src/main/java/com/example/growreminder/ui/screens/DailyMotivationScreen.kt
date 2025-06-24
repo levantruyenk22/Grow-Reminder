@@ -21,7 +21,7 @@ fun DailyMotivationScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 24.dp),
+            .padding(horizontal = 16.dp, vertical = 20.dp),
         horizontalAlignment = Alignment.Start
     ) {
         // Nút Back + Tiêu đề
@@ -29,7 +29,7 @@ fun DailyMotivationScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 30.dp)
+                .padding(top = 26.dp)
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
@@ -47,18 +47,18 @@ fun DailyMotivationScreen(navController: NavController) {
             )
         }
 
-        Spacer(modifier = Modifier.height(90.dp))
+        Spacer(modifier = Modifier.height(70.dp))
 
         // Các mục giống Card
         MotivationOptionCard("Phát triển bản thân") {
             navController.navigate("personalDevelopment")
         }
-        Spacer(modifier = Modifier.height(90.dp))
+        Spacer(modifier = Modifier.height(70.dp))
 
         MotivationOptionCard("Lịch dự kiến") {
             navController.navigate("schedule")
         }
-        Spacer(modifier = Modifier.height(90.dp))
+        Spacer(modifier = Modifier.height(70.dp))
 
         MotivationOptionCard("Lịch cần làm") {
             navController.navigate("schedule_list")
