@@ -2,7 +2,9 @@ package com.example.growreminder.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +28,7 @@ fun SignupPage(
     val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
     val authState by authViewModel.authState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -42,81 +45,84 @@ fun SignupPage(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Tạo tài khoản", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+    // ✅ Sử dụng MainAppLayout
+    MainAppLayout {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState), // Thêm khả năng cuộn
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Tạo tài khoản", fontSize = 30.sp, fontWeight = FontWeight.Bold)
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-        OutlinedTextField(
-            value = uiState.fullName,
-            onValueChange = authViewModel::updateFullName,
-            label = { Text("Họ và tên") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            OutlinedTextField(
+                value = uiState.fullName,
+                onValueChange = authViewModel::updateFullName,
+                label = { Text("Họ và tên") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(
-            value = uiState.username,
-            onValueChange = authViewModel::updateUsername,
-            label = { Text("Tên người dùng") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            OutlinedTextField(
+                value = uiState.username,
+                onValueChange = authViewModel::updateUsername,
+                label = { Text("Tên người dùng") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(
-            value = uiState.password,
-            onValueChange = authViewModel::updatePassword,
-            label = { Text("Mật khẩu") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
-        )
+            OutlinedTextField(
+                value = uiState.password,
+                onValueChange = authViewModel::updatePassword,
+                label = { Text("Mật khẩu") },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(
-            value = uiState.confirmPassword,
-            onValueChange = authViewModel::updateConfirmPassword,
-            label = { Text("Xác nhận mật khẩu") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
-        )
+            OutlinedTextField(
+                value = uiState.confirmPassword,
+                onValueChange = authViewModel::updateConfirmPassword,
+                label = { Text("Xác nhận mật khẩu") },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(
-            value = uiState.birthdate,
-            onValueChange = authViewModel::updateBirthdate,
-            label = { Text("Ngày sinh (dd/MM/yyyy)") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            OutlinedTextField(
+                value = uiState.birthdate,
+                onValueChange = authViewModel::updateBirthdate,
+                label = { Text("Ngày sinh (dd/MM/yyyy)") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(
-            value = uiState.location,
-            onValueChange = authViewModel::updateLocation,
-            label = { Text("Nơi ở hiện tại") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            OutlinedTextField(
+                value = uiState.location,
+                onValueChange = authViewModel::updateLocation,
+                label = { Text("Nơi ở hiện tại") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = { authViewModel.signup() }, modifier = Modifier.fillMaxWidth()) {
-            Text("Đăng ký")
-        }
+            Button(onClick = { authViewModel.signup() }, modifier = Modifier.fillMaxWidth()) {
+                Text("Đăng ký")
+            }
 
-        TextButton(onClick = { navController.navigate("login") }) {
-            Text("Đã có tài khoản? Đăng nhập")
+            TextButton(onClick = { navController.navigate("login") }) {
+                Text("Đã có tài khoản? Đăng nhập")
+            }
         }
     }
 }

@@ -17,15 +17,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.draw.shadow
 import androidx.navigation.NavController
 
-
 @Composable
 fun StudyChoiceScreen(navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    // ✅ Sử dụng MainAppLayout
+    MainAppLayout {
         StudyTitleSection(onBackClick = { navController.popBackStack() })
         Spacer(modifier = Modifier.height(50.dp))
 
@@ -76,7 +71,6 @@ fun StudyCard(text: String, navController: NavController) {
             .shadow(8.dp, shape = RoundedCornerShape(16.dp))
             .background(Color.White, shape = RoundedCornerShape(16.dp))
             .clickable {
-                // Truyền tên task khi điều hướng đến màn hình schedule
                 navController.navigate("schedule/${text}")
             }
             .padding(16.dp),

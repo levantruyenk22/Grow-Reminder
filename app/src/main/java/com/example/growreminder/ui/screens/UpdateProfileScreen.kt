@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,81 +39,90 @@ fun UpdateProfileScreen(navController: NavHostController) {
         }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text("Cập nhật hồ sơ", fontWeight = FontWeight.Bold)
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(24.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            OutlinedTextField(
-                value = fullName,
-                onValueChange = { fullName = it },
-                label = { Text("Họ và tên") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = username,
-                onValueChange = {},
-                label = { Text("Tên người dùng") },
-                readOnly = true, // 🔒 Không cho sửa
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = birthdate,
-                onValueChange = { birthdate = it },
-                label = { Text("Ngày sinh (dd/MM/yyyy)") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = location,
-                onValueChange = { location = it },
-                label = { Text("Nơi ở hiện tại") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    if (uid != null) {
-                        val data = mapOf(
-                            "fullName" to fullName,
-                            "birthdate" to birthdate,
-                            "location" to location
-                        )
-                        db.collection("users").document(uid).update(data)
-                            .addOnSuccessListener {
-                                Toast.makeText(context, "Đã lưu thông tin!", Toast.LENGTH_SHORT).show()
-                                navController.popBackStack()
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(context, "Lỗi: ${it.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(52.dp)
+    // ✅ Sử dụng MainAppLayout bọc ngoài Scaffold
+    MainAppLayout {
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text("Cập nhật hồ sơ", fontWeight = FontWeight.Bold)
+                    },
+                    // ✅ Đặt màu nền trong suốt để thấy background của MainAppLayout
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.Transparent
+                    )
+                )
+            },
+            // ✅ Đặt màu nền trong suốt
+            containerColor = Color.Transparent
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(24.dp) // Giữ lại padding riêng của màn hình này nếu cần
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Lưu thông tin")
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Họ và tên") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = {},
+                    label = { Text("Tên người dùng") },
+                    readOnly = true, // 🔒 Không cho sửa
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = birthdate,
+                    onValueChange = { birthdate = it },
+                    label = { Text("Ngày sinh (dd/MM/yyyy)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = location,
+                    onValueChange = { location = it },
+                    label = { Text("Nơi ở hiện tại") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        if (uid != null) {
+                            val data = mapOf(
+                                "fullName" to fullName,
+                                "birthdate" to birthdate,
+                                "location" to location
+                            )
+                            db.collection("users").document(uid).update(data)
+                                .addOnSuccessListener {
+                                    Toast.makeText(context, "Đã lưu thông tin!", Toast.LENGTH_SHORT).show()
+                                    navController.popBackStack()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(context, "Lỗi: ${it.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(52.dp)
+                ) {
+                    Text("Lưu thông tin")
+                }
             }
         }
     }

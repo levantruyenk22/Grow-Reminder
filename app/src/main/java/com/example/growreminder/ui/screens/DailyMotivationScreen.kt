@@ -18,12 +18,12 @@ import androidx.navigation.NavController
 
 @Composable
 fun DailyMotivationScreen(navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 20.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
+
+    // 1. Chỉ cần gọi MainAppLayout để có nền động
+    MainAppLayout {
+        // 2. Đặt toàn bộ nội dung gốc của bạn vào đây.
+        //    Lưu ý: Chúng ta đã xóa Column gốc vì MainAppLayout đã cung cấp sẵn.
+
         // Nút Back + Tiêu đề
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -31,18 +31,20 @@ fun DailyMotivationScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(top = 26.dp)
         ) {
+            // Bạn có thể cân nhắc làm cho nút Back này đẹp hơn giống như phiên bản
+            // trong mã gốc có hiệu ứng của bạn để giao diện được nhất quán
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
                     Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color(0xFF4A148C)
+                    tint = Color(0xFF1565C0) // Thay đổi màu để hợp với nền xanh mới
                 )
             }
             Text(
                 text = "Chào bạn đến với sự kỉ luật",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF4A148C),
+                color = Color(0xFF1565C0), // Thay đổi màu để hợp với nền xanh mới
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
@@ -50,6 +52,7 @@ fun DailyMotivationScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(70.dp))
 
         // Các mục giống Card
+        // Có thể bạn cũng muốn cập nhật màu sắc của các Card này
         MotivationOptionCard("Phát triển bản thân") {
             navController.navigate("personalDevelopment")
         }
@@ -66,14 +69,17 @@ fun DailyMotivationScreen(navController: NavController) {
     }
 }
 
-// ✅ Đổi tên hàm để tránh trùng lặp
+
 @Composable
 fun MotivationOptionCard(text: String, onClick: () -> Unit) {
+    // Để card nổi bật hơn trên nền xanh, chúng ta có thể làm nó sáng hơn
+    // và thêm một chút bóng đổ.
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(125.dp)
-            .background(Color(0xFFF1EDF9), shape = RoundedCornerShape(30.dp))
+            // Sử dụng màu trắng hoặc màu rất nhạt để nổi bật
+            .background(Color.White.copy(alpha = 0.85f), shape = RoundedCornerShape(30.dp))
             .clickable { onClick() }
             .padding(horizontal = 30.dp),
         contentAlignment = Alignment.CenterStart
@@ -82,7 +88,7 @@ fun MotivationOptionCard(text: String, onClick: () -> Unit) {
             text = text,
             fontSize = 25.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF4A148C)
+            color = Color(0xFF1565C0) // Màu chữ đậm để dễ đọc
         )
     }
 }
