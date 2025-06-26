@@ -17,7 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp // ✅ THÊM DÒNG IMPORT CÒN THIẾU
 import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun MonthlyRepeatCalendarDialog(
@@ -38,7 +41,9 @@ fun MonthlyRepeatCalendarDialog(
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Tháng trước")
                 }
                 Text(
-                    text = "${currentMonth.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${currentMonth.year}",
+                    // Hiển thị tên tháng và năm
+                    text = "${currentMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale("vi"))
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale("vi")) else it.toString() }} ${currentMonth.year}",
                     style = MaterialTheme.typography.titleMedium
                 )
                 IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
@@ -49,7 +54,10 @@ fun MonthlyRepeatCalendarDialog(
         text = {
             Column {
                 // Header các thứ trong tuần
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
                     listOf("T2", "T3", "T4", "T5", "T6", "T7", "CN").forEach {
                         Text(
                             text = it,
@@ -60,17 +68,25 @@ fun MonthlyRepeatCalendarDialog(
                     }
                 }
 
-                val startDayOfWeek = (currentMonth.dayOfWeek.value + 6) % 7 // CN = 0
+                Spacer(modifier = Modifier.height(8.dp))
+
                 val daysInMonth = currentMonth.lengthOfMonth()
-                val totalBoxes = startDayOfWeek + daysInMonth
-                val weeks = (0 until totalBoxes).chunked(7)
+                val firstDayOfWeek = currentMonth.dayOfWeek.value
+                val offset = firstDayOfWeek - 1 // MONDAY là 0, SUNDAY là 6
+
+                val totalGridCells = ((daysInMonth + offset + 6) / 7) * 7
+
+                val weeks = (0 until totalGridCells).chunked(7)
 
                 weeks.forEach { week ->
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        week.forEach { index ->
-                            val dayOffset = index - startDayOfWeek + 1
-                            if (dayOffset in 1..daysInMonth) {
-                                val date = currentMonth.withDayOfMonth(dayOffset)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        week.forEach { dayIndex ->
+                            val dayOfMonth = dayIndex - offset + 1
+                            if (dayOfMonth in 1..daysInMonth) {
+                                val date = currentMonth.withDayOfMonth(dayOfMonth)
                                 val isSelected = selectedDates.contains(date)
                                 val bgColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
                                 val textColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
@@ -79,8 +95,7 @@ fun MonthlyRepeatCalendarDialog(
                                     modifier = Modifier
                                         .weight(1f)
                                         .aspectRatio(1f)
-                                        .padding(4.dp)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .clip(RoundedCornerShape(12.dp))
                                         .background(bgColor)
                                         .clickable {
                                             if (isSelected) selectedDates.remove(date)
@@ -88,13 +103,14 @@ fun MonthlyRepeatCalendarDialog(
                                         },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = "$dayOffset", color = textColor)
+                                    Text(text = "$dayOfMonth", color = textColor, fontSize = 14.sp)
                                 }
                             } else {
                                 Spacer(modifier = Modifier.weight(1f).aspectRatio(1f))
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         },

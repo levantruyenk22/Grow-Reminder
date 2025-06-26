@@ -19,13 +19,7 @@ import com.example.growreminder.sign_in.AuthViewModel
 
 @Composable
 fun PersonalDevelopmentScreen(navController: NavController, authViewModel: AuthViewModel) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 30.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-        // Nút trở về và tiêu đề
+    MainAppLayout {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -48,15 +42,18 @@ fun PersonalDevelopmentScreen(navController: NavController, authViewModel: AuthV
             )
         }
 
-        Spacer(modifier = Modifier.height(80.dp)) // Khoảng cách sau tiêu đề
+        Spacer(modifier = Modifier.height(80.dp))
 
-        // Các lựa chọn với khoảng cách đều
+        // ✅ Thay đổi cách bố trí khoảng cách ở đây
         Column(
-            verticalArrangement = Arrangement.spacedBy(32.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             ChoiceCard("Học Tập, đọc sách") { navController.navigate("studyChoice") }
+            // ✅ Thêm Spacer để giống trang DailyMotivationScreen
+            Spacer(modifier = Modifier.height(70.dp))
             ChoiceCard("Sức khỏe") { navController.navigate("healthChoice") }
+            // ✅ Thêm Spacer để giống trang DailyMotivationScreen
+            Spacer(modifier = Modifier.height(70.dp))
             ChoiceCard("Kỹ năng mới") { navController.navigate("newSkillChoice") }
         }
     }

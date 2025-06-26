@@ -1,5 +1,6 @@
 package com.example.growreminder.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -21,7 +22,6 @@ import com.example.growreminder.sign_in.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import androidx.compose.foundation.BorderStroke
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,75 +38,80 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
         }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text("Hồ sơ cá nhân", fontWeight = FontWeight.Bold)
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Avatar
-            Image(
-                painter = painterResource(id = R.drawable.avatar),
-                contentDescription = "Avatar",
+    // ✅ Sử dụng MainAppLayout
+    MainAppLayout {
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text("Hồ sơ cá nhân", fontWeight = FontWeight.Bold)
+                    },
+                    // ✅ Đặt màu nền trong suốt
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.Transparent
+                    )
+                )
+            },
+            // ✅ Đặt màu nền trong suốt
+            containerColor = Color.Transparent
+        ) { padding ->
+            Column(
                 modifier = Modifier
-                    .size(130.dp)
-                    .clip(CircleShape)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Họ tên
-            Text(
-                text = profileInfo["fullName"] ?: "Họ và tên",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            // Username
-            Text(
-                text = "@${profileInfo["username"] ?: "username"}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Ngày sinh
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                    .padding(padding)
+                    .fillMaxSize(), // fillMaxSize để chiếm hết không gian Scaffold
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("🎂 Ngày sinh: ", fontWeight = FontWeight.Medium)
-                Text(profileInfo["birthdate"] ?: "Chưa cập nhật")
-            }
+                // Avatar
+                Image(
+                    painter = painterResource(id = R.drawable.avatar),
+                    contentDescription = "Avatar",
+                    modifier = Modifier
+                        .size(130.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // Nơi ở
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("📍 Nơi ở: ", fontWeight = FontWeight.Medium)
-                Text(profileInfo["location"] ?: "Chưa cập nhật")
-            }
+                // Họ tên
+                Text(
+                    text = profileInfo["fullName"] ?: "Họ và tên",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
 
-            // ⚠️ Nếu thiếu thông tin: hiện nút cập nhật
-            val missingInfo = profileInfo["birthdate"].isNullOrEmpty() || profileInfo["location"].isNullOrEmpty()
+                // Username
+                Text(
+                    text = "@${profileInfo["username"] ?: "username"}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Ngày sinh
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("🎂 Ngày sinh: ", fontWeight = FontWeight.Medium)
+                    Text(profileInfo["birthdate"] ?: "Chưa cập nhật")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Nơi ở
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("📍 Nơi ở: ", fontWeight = FontWeight.Medium)
+                    Text(profileInfo["location"] ?: "Chưa cập nhật")
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
+                // Nút Cập nhật thông tin
                 Button(
                     onClick = { navController.navigate("update_info") },
                     modifier = Modifier
@@ -117,40 +122,38 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
                     Text("Cập nhật thông tin")
                 }
 
+                Spacer(modifier = Modifier.height(32.dp))
 
+                // Nút Get Started
+                Button(
+                    onClick = { navController.navigate("home") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Bắt đầu sử dụng", fontSize = 16.sp)
+                }
 
+                Spacer(modifier = Modifier.weight(1f))
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Nút Get Started
-            Button(
-                onClick = { navController.navigate("home") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Bắt đầu sử dụng", fontSize = 16.sp)
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Nút Đăng xuất
-            OutlinedButton(
-                onClick = {
-                    authViewModel.signOut()
-                    navController.navigate("login") { popUpTo(0) }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color.Red
-                ),
-                border = BorderStroke(1.dp, Color.Red)
-            ) {
-                Text("Đăng xuất", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                // Nút Đăng xuất
+                OutlinedButton(
+                    onClick = {
+                        authViewModel.signOut()
+                        navController.navigate("login") { popUpTo(0) }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.Red
+                    ),
+                    border = BorderStroke(1.dp, Color.Red)
+                ) {
+                    Text("Đăng xuất", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                }
             }
         }
     }

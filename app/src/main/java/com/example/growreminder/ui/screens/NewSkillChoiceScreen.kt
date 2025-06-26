@@ -20,12 +20,8 @@ import androidx.navigation.NavController
 
 @Composable
 fun NewSkillChoiceScreen(navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    // ✅ Sử dụng MainAppLayout
+    MainAppLayout {
         SkillTitleSection(
             title = "Gợi ý Kĩ năng mới",
             onBackClick = { navController.popBackStack() }
@@ -79,7 +75,6 @@ fun SkillCard(text: String, navController: NavController) {
             .shadow(8.dp, shape = RoundedCornerShape(16.dp))
             .background(Color.White, shape = RoundedCornerShape(16.dp))
             .clickable {
-                // Truyền tên task khi điều hướng đến màn hình schedule
                 navController.navigate("schedule/${text}")
             }
             .padding(16.dp),

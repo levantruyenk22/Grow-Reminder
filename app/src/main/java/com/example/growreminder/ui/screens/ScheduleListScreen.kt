@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.database.ktx.database
 import com.example.growreminder.ui.alarm.AlarmScheduler
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -53,42 +53,6 @@ fun ScheduleListScreen(navController: NavController) {
     val context = LocalContext.current
     val scheduleList = remember { mutableStateListOf<ScheduleItem>() }
     val alarmScheduler = remember { AlarmScheduler(context) }
-
-    val infiniteTransition = rememberInfiniteTransition(label = "background")
-    val backgroundColors = listOf(
-        infiniteTransition.animateColor(
-            initialValue = Color(0xFFE3F2FD),
-            targetValue = Color(0xFFBBDEFB),
-            animationSpec = infiniteRepeatable(
-                animation = tween(6000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "bgColor1"
-        ),
-        infiniteTransition.animateColor(
-            initialValue = Color(0xFFBBDEFB),
-            targetValue = Color(0xFF90CAF9),
-            animationSpec = infiniteRepeatable(
-                animation = tween(8000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "bgColor2"
-        ),
-        infiniteTransition.animateColor(
-            initialValue = Color(0xFF90CAF9),
-            targetValue = Color(0xFFE1F5FE),
-            animationSpec = infiniteRepeatable(
-                animation = tween(7000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "bgColor3"
-        )
-    )
-
-    val backgroundGradient = Brush.verticalGradient(
-        colors = backgroundColors.map { it.value }
-    )
-
     val textColor = Color(0xFF1565C0)
 
     // Dialog states
@@ -128,7 +92,6 @@ fun ScheduleListScreen(navController: NavController) {
             isFirstLoad = false
         }
     }
-
     // DatePicker Dialog
     if (showDatePicker.value) {
         DatePickerDialog(
@@ -403,13 +366,7 @@ fun ScheduleListScreen(navController: NavController) {
     }
 
     // Main UI
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundGradient)
-            .padding(horizontal = 16.dp, vertical = 24.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
+    MainAppLayout {
         // Header
         Row(
             verticalAlignment = Alignment.CenterVertically,

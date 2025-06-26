@@ -81,7 +81,9 @@ fun AppNavigation(
             composable("profile") {
                 ProfileScreen(navController = navController, authViewModel = authViewModel)
             }
-
+            composable("update_info") {
+                UpdateProfileScreen(navController = navController)
+            }
             composable(
                 route = "schedule/{taskName}",
                 arguments = listOf(navArgument("taskName") { type = NavType.StringType })
